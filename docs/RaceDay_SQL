@@ -1,0 +1,108 @@
+Create Database Race_Day;
+
+Create Table Participant(
+ParticipantID tinyint Primary Key, 
+Name Varchar(20) Not Null); 
+
+Create Table Results(
+ResultID tinyint Primary Key,
+Description Varchar(30) Not Null,
+ParticipantID tinyint,
+Foreign Key(ParticipantID) References Participant(ParticipantID));
+
+Create Table Organisers(
+OrganiserID tinyint Primary Key, 
+OrganiserName Varchar(20) Not Null);
+
+Create Table Event(
+EventID tinyint Primary Key,
+Location Varchar(30),
+EventName Varchar(20) Not Null,
+EventYear int Not Null,
+OrganiserID tinyint,
+Foreign Key (OrganiserID) References Organiser(OrganiserID));
+
+Create Table Role (
+RoleID tinyint PRIMARY KEY,
+RoleName Varchar(20) NOT NULL,
+Description Varchar(50));
+
+Create Table Users (
+UserID tinyint PRIMARY KEY,
+UserName Varchar(20) NOT NULL,
+RoleID tinyint ,
+FOREIGN Key (RoleID) References Role(RoleID));
+
+Create Table Catagory(
+CatagoryID tinyint Primary Key,
+Description Varchar(30),
+EventID tinyint,
+Foreign Key (EventID) References Event(EventID));
+
+Create Table EventEnrolment(
+EventEnrolmentID int Primary Key,
+Date date Not Null, 
+Time time Not Null,
+EventID tinyint,
+ParticipantID tinyint,
+Foreign Key (EventID) References Event(EventID),
+Foreign Key(ParticipantID) References Participant(ParticipantID));
+
+INSERT INTO Participant (ParticipantID, Name)
+VALUES
+(5, 'David Miller'),
+(6, 'Emma Wilson'),
+(7, 'Daniel Adams'),
+(8, 'Chloe Martin');
+
+INSERT INTO Results (ResultID, Description, ParticipantID)
+VALUES
+(5, 'Winner', 5),
+(6, 'Runner Up', 6),
+(7, 'Fourth Place', 7),
+(8, 'Did Not Finish', 8);
+
+INSERT INTO Organisers (OrganiserID, OrganiserName)
+VALUES
+(5, 'Elite Sports'),
+(6, 'Pro Events'),
+(7, 'Victory Races'),
+(8, 'Champions Co');
+
+INSERT INTO Event (EventID, Location, EventName, EventYear, OrganiserID)
+VALUES
+(5, 'Bloemfontein', 'Spring Challenge', 2025, 5),
+(6, 'Gqeberha', 'Ocean Run', 2025, 6),
+(7, 'Polokwane', 'City Sprint', 2025, 7),
+(8, 'East London', 'Harbour Race', 2025, 8);
+
+INSERT INTO Catagory (CatagoryID, Description, EventID)
+VALUES
+(5, '15km Race', 5),
+(6, '25km Race', 6),
+(7, '8km Race', 7),
+(8, '30km Race', 8);
+
+INSERT INTO Role (RoleID, RoleName, Description)
+VALUES
+(1, 'Admin', 'Full system access and management'),
+(2, 'Organiser', 'Can create and manage events'),
+(3, 'Participant', 'Can enrol and view results'),
+(4, 'Viewer', 'Can view events and results only');
+
+INSERT INTO Users (UserID, UserName, RoleID)
+VALUES
+(1, 'John Smith', 1),
+(2, 'Sarah Johnson', 2),
+(3, 'David Miller', 3),
+(4, 'Emma Wilson', 3),
+(5, 'Daniel Adams', 3),
+(6, 'Chloe Martin', 3),
+(7, 'Liam Brown', 4);
+
+INSERT INTO EventEnrolment (EventEnrolmentID, Date, Time, EventID, ParticipantID)
+VALUES
+(5, '2025-09-10', '08:30', 5, 5),
+(6, '2025-09-15', '00:00', 6, 6),
+(7, '2025-09-20', '07:30', 7, 7),
+(8, '2025-09-25', '10:00', 8, 8); 
