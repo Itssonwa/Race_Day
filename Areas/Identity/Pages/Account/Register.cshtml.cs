@@ -123,15 +123,17 @@ public class RegisterModel : PageModel
                 //Assign Guest users a role 
                 var roleResult = await _userManager.AddToRoleAsync(user, "Participant");
 
-                if (!roleResult.Succeeded) 
+                if (!roleResult.Succeeded)
                 {
                     foreach (var error in roleResult.Errors)
                     {
                         _logger.LogError("Faild to assign a role:{Error}", error.Description);
                     }
-              
-
-
+                    //Roleback to ensure everyone is given a role 
+                    await _userManager.DeleteAsync(user);
+                    ModelState.AddModelError(string.Empty, "Unable to complete registration. Give it another swing");
+                    return Page();
+                }
 
 
                 _logger.LogInformation("User created a new account with password.");
