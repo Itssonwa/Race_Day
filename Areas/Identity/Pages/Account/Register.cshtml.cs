@@ -120,6 +120,20 @@ public class RegisterModel : PageModel
 
             if (result.Succeeded)
             {
+                //Assign Guest users a role 
+                var roleResult = await _userManager.AddToRoleAsync(user, "Participant");
+
+                if (!roleResult.Succeeded) 
+                {
+                    foreach (var error in roleResult.Errors)
+                    {
+                        _logger.LogError("Faild to assign a role:{Error}", error.Description);
+                    }
+              
+
+
+
+
                 _logger.LogInformation("User created a new account with password.");
 
                 var userId = await _userManager.GetUserIdAsync(user);
