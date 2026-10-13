@@ -115,6 +115,12 @@ public class LoginModel : PageModel
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
+                if (User.IsInRole("Organiser"))
+                {
+                    _logger.LogInformation("Welcome Organiser!");
+                    return RedirectToAction("OrganiserDashboard", "Home");
+                }
+
                 _logger.LogInformation("User logged in.");
                 return LocalRedirect(returnUrl);
             }
