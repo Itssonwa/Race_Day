@@ -13,6 +13,11 @@ namespace RaceDay.Controllers
             _logger = logger;
         }
 
+        public IActionResult OrganiserDashboard()
+        {
+            return View();
+        }
+
         public IActionResult Index()
         {
             return View();
