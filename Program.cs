@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Data;
+using RaceDay.Models.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-//builder.Services.AddScoped<IProfileImageService, ProfileImageService>();
+builder.Services.AddScoped<IProfileImageService, ProfileImageService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
