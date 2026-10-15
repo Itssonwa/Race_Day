@@ -117,12 +117,12 @@ public class LoginModel : PageModel
             {
                 if (User.IsInRole("Organiser"))
                 {
-                    _logger.LogInformation("Welcome Organiser!");
+                    _logger.LogInformation("User Organiser logged in.");
                     return RedirectToAction("OrganiserDashboard", "Home");
                 }
                 else if (User.IsInRole("Participant"))
                 {
-                    _logger.LogInformation("Welcome Participant!");
+                    _logger.LogInformation("User Participant logged in.");
                     return RedirectToPage("./Manage/Index");
                 }
 

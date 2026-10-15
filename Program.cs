@@ -18,36 +18,40 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-using (var Scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
-    var db = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 
-    var RoleManager = Scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var roles = new[] { "Organiser", "Participant" };
 
     foreach (var role in roles)
     {
-        if(!await RoleManager.RoleExistsAsync(role))
-                {
-            await RoleManager.CreateAsync(new IdentityRole(role));
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
         }
     }
 
-    var userManager = Scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-    String email = "organisr@guy.com";
-    String password = "P@55word";
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    string email = "organiser@guy.com";
+    string password = "P@55w0rd";
 
-    if(await userManager.FindByEmailAsync(email)== null)
+    if (await userManager.FindByEmailAsync(email) == null)
     {
-        var user = new IdentityUser();
+        var user = new IdentityUser
+        {
+            Email = email,
+            UserName = email,
+            EmailConfirmed = true
+        };
 
-        user .Email = email;
-        user .UserName = email;
-        user .EmailConfirmed = true;
-
-        await userManager.CreateAsync(user, password);
-        await userManager.CreateAsync(user, "Organiser");
+        var result = await userManager.CreateAsync(user, password);
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(user, "Organiser");
+        }
     }
 }
 
