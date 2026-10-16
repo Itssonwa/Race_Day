@@ -41,22 +41,31 @@ using (var scope = app.Services.CreateScope())
     string email = "organiser@guy.com";
     string password = "P@55w0rd";
 
-    if (await userManager.FindByEmailAsync(email) == null)
+    var user = await userManager.FindByEmailAsync(email);
+
+    if (user == null)
     {
-        var user = new ApplicationUser
+        user = new ApplicationUser
         {
             Email = email,
             UserName = email,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            FirstName = "Organiser",
+            LastName = "Admin",
+            Gender = Gender.PreferNotToSay
         };
 
+
         var result = await userManager.CreateAsync(user, password);
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(user, "Organiser");
-        }
+        if (!result.Succeeded) user = null;
+    }
+
+    if (user != null && !await userManager.IsInRoleAsync(user, "Organiser"))
+    {
+        await userManager.AddToRoleAsync(user, "Organiser");
     }
 }
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -75,6 +84,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
