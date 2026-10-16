@@ -1,5 +1,5 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Linq.Expressions;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,38 +10,44 @@ namespace RaceDay.Controllers.Api
 {
     [ApiController]
     [Route("api/events")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class EventsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
         public EventsController(ApplicationDbContext db) => _db = db;
 
-        private const string Scheme = JwtBearerDefaults.AuthenticationScheme;
+        private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        /// <summary>Lists all events. Any authenticated user.</summary>
-        /// <returns>A list of events.</returns>
+        private static readonly Expression<Func<Event, EventResponse>> Map = e =>
+            new EventResponse(e.Id, e.Name, e.Description, e.Date, e.Location, e.DistanceKm,
+                e.EventType, e.OrganiserId,
+                e.Categories.Select(c => new CategoryResponse(c.Id, c.Name)).ToList());
+
+        private static readonly Func<Event, EventResponse> ToResponse = Map.Compile();
+
+        /// <summary>Lists all events with their categories. Both roles.</summary>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<EventResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAll() =>
-            Ok(await _db.Events.AsNoTracking().OrderBy(e => e.Date).ToListAsync());
+            Ok(await _db.Events.AsNoTracking().OrderBy(e => e.Date).Select(Map).ToListAsync());
 
-        /// <summary>Gets one event by id. Any authenticated user.</summary>
+        /// <summary>Gets one event by id. Both roles.</summary>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
-            var ev = await _db.Events.FindAsync(id);
+            var ev = await _db.Events.AsNoTracking().Where(e => e.Id == id).Select(Map).FirstOrDefaultAsync();
             return ev == null ? NotFound() : Ok(ev);
         }
 
         /// <summary>Creates an event. Organisers only.</summary>
-        /// <remarks>Expects name, location and date. Description is optional.</remarks>
+        /// <remarks>Expects name, description, date, location, distanceKm and eventType (Run, Walk or Cycle).</remarks>
         [HttpPost]
-        [Authorize(AuthenticationSchemes = Scheme, Roles = "Organiser")]
-        [ProducesResponseType(typeof(Event), StatusCodes.Status201Created)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Organiser")]
+        [ProducesResponseType(typeof(EventResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -51,18 +57,20 @@ namespace RaceDay.Controllers.Api
             {
                 Name = dto.Name,
                 Description = dto.Description,
-                Location = dto.Location,
                 Date = dto.Date,
-                OrganiserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                Location = dto.Location,
+                DistanceKm = dto.DistanceKm,
+                EventType = dto.EventType,
+                OrganiserId = UserId
             };
             _db.Events.Add(ev);
             await _db.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = ev.Id }, ev);
+            return CreatedAtAction(nameof(GetById), new { id = ev.Id }, ToResponse(ev));
         }
 
-        /// <summary>Updates an event. Organisers only.</summary>
+        /// <summary>Updates one of your events. Organisers only.</summary>
         [HttpPut("{id}")]
-        [Authorize(AuthenticationSchemes = Scheme, Roles = "Organiser")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Organiser")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -72,18 +80,17 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.FindAsync(id);
             if (ev == null) return NotFound();
+            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
 
-            ev.Name = dto.Name;
-            ev.Description = dto.Description;
-            ev.Location = dto.Location;
-            ev.Date = dto.Date;
+            ev.Name = dto.Name; ev.Description = dto.Description; ev.Date = dto.Date;
+            ev.Location = dto.Location; ev.DistanceKm = dto.DistanceKm; ev.EventType = dto.EventType;
             await _db.SaveChangesAsync();
             return NoContent();
         }
 
-        /// <summary>Deletes an event. Organisers only.</summary>
+        /// <summary>Deletes one of your events. Organisers only.</summary>
         [HttpDelete("{id}")]
-        [Authorize(AuthenticationSchemes = Scheme, Roles = "Organiser")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Organiser")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -92,32 +99,11 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.FindAsync(id);
             if (ev == null) return NotFound();
+            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
 
             _db.Events.Remove(ev);
             await _db.SaveChangesAsync();
             return NoContent();
-        }
-
-        /// <summary>Enrols the current Participant in an event.</summary>
-        /// <remarks>No body needed. The participant is taken from the token.</remarks>
-        [HttpPost("{id}/enrol")]
-        [Authorize(AuthenticationSchemes = Scheme, Roles = "Participant")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> Enrol(int id)
-        {
-            if (!await _db.Events.AnyAsync(e => e.Id == id)) return NotFound();
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            if (await _db.Enrolments.AnyAsync(e => e.EventId == id && e.UserId == userId))
-                return Conflict("Already enrolled in this event.");
-
-            _db.Enrolments.Add(new Enrolment { EventId = id, UserId = userId });
-            await _db.SaveChangesAsync();
-            return Ok();
         }
     }
 }
