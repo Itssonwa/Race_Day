@@ -67,4 +67,6 @@ namespace RaceDay.Controllers.Api
             return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
     }
+
+
 }
