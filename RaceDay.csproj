@@ -7,27 +7,20 @@
 		<UserSecretsId>aspnet-RaceDay-a5c7dbef-3df5-4b2c-a9f5-b71d2317963a</UserSecretsId>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
-	<PropertyGroup>
-  <TargetFramework>net9.0</TargetFramework>
-  <Nullable>enable</Nullable>
-  <ImplicitUsings>enable</ImplicitUsings>
-  <UserSecretsId>aspnet-RaceDay-a5c7dbef-3df5-4b2c-a9f5-b71d2317963a</UserSecretsId>
-  <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  <NoWarn>$(NoWarn);1591</NoWarn>
-</PropertyGroup>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.20" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.20" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.20" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.20" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.20" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.20">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.20" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.20" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.20" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.20" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.20" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.20">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.0" />
+	</ItemGroup>
 
-</Project>
+</Project> 
