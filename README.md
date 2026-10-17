@@ -94,3 +94,130 @@ Broken navbar avatar: default-avatar.png is missing.
 "Hello !" with no name: FirstName is empty; update it on the profile page.
 ApplicationUser not found: add using RaceDay.Data; (or @using RaceDay.Data in views).
 Image upload arrives as null: the form needs enctype="multipart/form-data".
+
+
+
+*Features*
+
+*Website*
+
+Registration, login and role-based redirect (Organisers to the dashboard, Participants to their profile)
+Profile page with name, gender, phone number and profile image upload
+Organiser-only user and role management at /UserRoles
+Navbar with avatar, first name and an API Docs link
+
+
+
+*REST API*
+
+JWT authentication with Participant and Organiser roles
+Profile, events, categories, enrolments and results endpoints
+Role-based access and ownership checks (an Organiser can only change their own events)
+Swagger UI with descriptions, request shapes and response codes for every endpoint
+Tech Stack
+ASP.NET Core 9 (MVC, Razor Pages, Web API)
+ASP.NET Core Identity with JWT bearer authentication
+Entity Framework Core with SQL Server
+Swashbuckle (Swagger / OpenAPI)
+Bootstrap
+Getting Started
+Set DefaultConnection in appsettings.json.
+Set the Jwt section in appsettings.json (Key must be 32+ characters; use User Secrets for anything beyond local development):
+json
+   "Jwt": { "Key": "your-long-random-key", "Issuer": "RaceDay", "Audience": "RaceDayUsers" }
+Add a fallback avatar at wwwroot/images/default-avatar.png.
+Make sure the project has a migration for the current model: Add-Migration <Name> in Package Manager Console.
+Run the app. On startup it applies migrations, creates the Organiser and Participant roles and seeds an Organiser account.
+
+If you change a model, add a new migration, otherwise startup fails with PendingModelChangesWarning.
+
+Seeded Organiser (development only)
+Email: organiser@guy.com
+Password: P@55w0rd
+
+Change or remove these before deploying.
+
+
+
+*Using Swagger*
+
+Open /swagger (or click API Docs in the navbar).
+Expand POST /api/auth/login, click Try it out, enter an email and password, and Execute.
+Copy the token from the response.
+Click Authorize, paste the token only (Swagger adds "Bearer") and confirm.
+Call any protected endpoint. To switch roles, use Authorize → Logout and paste the other user's token.
+
+Tokens expire after 2 hours.
+
+*API Endpoints*
+
+*Auth*
+
+POST /api/auth/register: register as Participant or Organiser (role field)
+POST /api/auth/login: returns a JWT and the user's roles
+
+
+
+*Profile (both roles)*
+
+GET /api/profile: view your own profile
+PUT /api/profile: update your own profile
+
+
+
+*Events*
+
+GET /api/events and GET /api/events/{id}: view events (both roles)
+POST /api/events, PUT /api/events/{id}, DELETE /api/events/{id}: manage your own events (Organiser)
+Each event has a name, description, date, location, distanceKm and eventType (Run, Walk or Cycle)
+
+
+
+*Categories*
+
+GET /api/events/{eventId}/categories: view categories (both roles)
+POST and DELETE /api/events/{eventId}/categories: define categories such as "Under 20" or "21km" (Organiser)
+
+
+
+*Enrolments*
+
+POST /api/events/{eventId}/enrol: enrol under a chosen categoryId (Participant)
+GET /api/enrolments/mine: your own enrolments (Participant)
+GET /api/events/{eventId}/enrolments: all enrolments for your event (Organiser)
+
+
+
+*Results*
+
+POST and PUT /api/events/{eventId}/results: record finish time and position (Organiser)
+GET /api/events/{eventId}/results: results for your event (Organiser)
+GET /api/results/mine: your own results (Participant)
+Response Codes
+401: no or invalid token
+403: wrong role, or not the owner of the event
+404: event, category, enrolment or result not found
+409: duplicate (already enrolled, category name exists, result already recorded)
+400: invalid data
+Website Usage
+
+Assign a role: log in as an Organiser, open /UserRoles, click Manage Roles on a user, tick the roles and click Update Roles.
+
+Edit your profile: click your name in the navbar, update your details, optionally upload an image (.jpg, .jpeg, .png, .webp, max 2 MB) and click Save.
+
+
+
+*Project Structure*
+
+Data/: ApplicationUser, ApplicationDbContext, migrations
+Models/: Event, Category, Enrolment, Result, API request and response DTOs, profile image service
+Controllers/Api/: AuthController, ProfileController, EventsController, CategoriesController, EnrolmentsController, ResultsController
+Controllers/: HomeController, UserRoles
+Areas/Identity/Pages/Account/: login with role redirect, profile page
+Views/: website pages and navbar
+Security Notes
+API endpoints use JWT bearer auth, the website uses cookies.
+Role rules use [Authorize(Roles = ...)], and event ownership is checked in the controllers.
+Anyone can register as an Organiser through the API. Restrict this before real use.
+Roles are stored in the token or cookie, so log in again after a role change.
+Profile image uploads are checked by extension and size only.
