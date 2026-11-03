@@ -15,11 +15,11 @@ namespace RaceDay.Controllers.Api
         private readonly ApplicationDbContext _db;
         public ResultsController(ApplicationDbContext db) => _db = db;
 
-        private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        private string ParticipantId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         private static readonly Expression<Func<Result, ResultResponse>> Map = r =>
             new ResultResponse(r.Id, r.EnrolmentId, r.Enrolment!.EventId, r.Enrolment.Event!.Name,
-                r.Enrolment.User!.FirstName + " " + r.Enrolment.User.LastName,
+                r.Enrolment.Participant.FirstName + " " + r.Enrolment.Participant.LastName,
                 r.Enrolment.Category!.Name, r.FinishTime, r.Position);
 
         /// <summary>Records a participant's finish time and position. Organisers only.</summary>
@@ -36,7 +36,7 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
             if (ev == null) return NotFound("Event not found.");
-            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
+            if (ev.OrganiserId != ParticipantId) return StatusCode(StatusCodes.Status403Forbidden);
 
             if (!await _db.Enrolments.AnyAsync(e => e.Id == dto.EnrolmentId && e.EventId == eventId))
                 return NotFound("Enrolment not found for this event.");
@@ -63,7 +63,7 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
             if (ev == null) return NotFound();
-            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
+            if (ev.OrganiserId != ParticipantId) return StatusCode(StatusCodes.Status403Forbidden);
 
             var result = await _db.Results.Include(r => r.Enrolment)
                 .FirstOrDefaultAsync(r => r.Id == resultId && r.Enrolment!.EventId == eventId);
@@ -86,7 +86,7 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
             if (ev == null) return NotFound();
-            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
+            if (ev.OrganiserId != ParticipantId) return StatusCode(StatusCodes.Status403Forbidden);
 
             return Ok(await _db.Results.AsNoTracking()
                 .Where(r => r.Enrolment!.EventId == eventId)
@@ -101,6 +101,6 @@ namespace RaceDay.Controllers.Api
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Mine() =>
             Ok(await _db.Results.AsNoTracking()
-                .Where(r => r.Enrolment!.UserId == UserId).Select(Map).ToListAsync());
+                .Where(r => r.Enrolment!.ParticipantId == ParticipantId).Select(Map).ToListAsync());
     }
 }

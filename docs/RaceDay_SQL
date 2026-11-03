@@ -28,7 +28,7 @@ RoleName Varchar(20) NOT NULL,
 Description Varchar(50));
 
 Create Table Users (
-UserID tinyint PRIMARY KEY,
+ParticipantId tinyint PRIMARY KEY,
 UserName Varchar(20) NOT NULL,
 RoleID tinyint ,
 FOREIGN Key (RoleID) References Role(RoleID));
@@ -90,7 +90,7 @@ VALUES
 (3, 'Participant', 'Can enrol and view results'),
 (4, 'Viewer', 'Can view events and results only');
 
-INSERT INTO Users (UserID, UserName, RoleID)
+INSERT INTO Users (ParticipantId, UserName, RoleID)
 VALUES
 (1, 'John Smith', 1),
 (2, 'Sarah Johnson', 2),

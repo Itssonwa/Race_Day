@@ -22,7 +22,7 @@ public class EventsController : Controller
     // Both roles
     public async Task<IActionResult> Index()
     {
-        ViewBag.UserId = _users.GetUserId(User);
+        ViewBag.ParticipantId = _users.GetUserId(User);
         var events = await _db.Events
             .Include(e => e.Organiser)
             .AsNoTracking()
@@ -43,10 +43,10 @@ public class EventsController : Controller
             .FirstOrDefaultAsync(e => e.Id == id);
         if (ev == null) return NotFound();
 
-        var userId = _users.GetUserId(User);
-        ViewBag.IsOwner = ev.OrganiserId == userId;
+        var ParticipantId = _users.GetUserId(User);
+        ViewBag.IsOwner = ev.OrganiserId == ParticipantId;
         ViewBag.IsEnrolled = await _db.Enrolments
-            .AnyAsync(en => en.EventId == ev.Id && en.ParticipantId == userId);
+            .AnyAsync(en => en.EventId == ev.Id && en.ParticipantId == ParticipantId);
 
         return View(ev);
     }
@@ -126,7 +126,7 @@ public class EventsController : Controller
 
     private Task<Event?> FindOwnedEventAsync(int id)
     {
-        var userId = _users.GetUserId(User);
-        return _db.Events.FirstOrDefaultAsync(e => e.Id == id && e.OrganiserId == userId);
+        var ParticipantId = _users.GetUserId(User);
+        return _db.Events.FirstOrDefaultAsync(e => e.Id == id && e.OrganiserId == ParticipantId);
     }
 }

@@ -9,7 +9,7 @@ namespace RaceDay.Models
         [Required, MaxLength(500)] public string Description { get; set; } = string.Empty;
         [Required] public DateTime Date { get; set; }
         [Required, MaxLength(150)] public string Location { get; set; } = string.Empty;
-        [Range(0.1, 1000)] public double DistanceKm { get; set; }
+        [Range(0.1, 1000)] public decimal DistanceKm { get; set; }
         [Required] public EventType EventType { get; set; }
     }
 
@@ -48,7 +48,7 @@ namespace RaceDay.Models
     public record CategoryResponse(int Id, string Name);
 
     public record EventResponse(int Id, string Name, string Description, DateTime Date,
-        string Location, double DistanceKm, EventType EventType, string? OrganiserId,
+        string Location, decimal DistanceKm, EventType EventType, string? OrganiserId,
         List<CategoryResponse> Categories);
 
     public record EnrolmentResponse(int Id, int EventId, string EventName, int CategoryId,

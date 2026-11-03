@@ -90,13 +90,13 @@ namespace RaceDay.Data.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("ParticipantId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ParticipantId");
 
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
@@ -114,26 +114,26 @@ namespace RaceDay.Data.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("ParticipantId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ParticipantId");
 
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<string>("UserId")
+                    b.Property<string>("ParticipantId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.HasKey("ParticipantId", "RoleId");
 
                     b.HasIndex("RoleId");
 
@@ -142,7 +142,7 @@ namespace RaceDay.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<string>("UserId")
+                    b.Property<string>("ParticipantId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
@@ -156,7 +156,7 @@ namespace RaceDay.Data.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                    b.HasKey("ParticipantId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
@@ -259,13 +259,13 @@ namespace RaceDay.Data.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("ParticipantId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId", "UserId")
+                    b.HasIndex("EventId", "ParticipantId")
                         .IsUnique();
 
                     b.ToTable("Enrolments");
@@ -314,7 +314,7 @@ namespace RaceDay.Data.Migrations
                 {
                     b.HasOne("RaceDay.Data.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -323,7 +323,7 @@ namespace RaceDay.Data.Migrations
                 {
                     b.HasOne("RaceDay.Data.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -338,7 +338,7 @@ namespace RaceDay.Data.Migrations
 
                     b.HasOne("RaceDay.Data.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -347,7 +347,7 @@ namespace RaceDay.Data.Migrations
                 {
                     b.HasOne("RaceDay.Data.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

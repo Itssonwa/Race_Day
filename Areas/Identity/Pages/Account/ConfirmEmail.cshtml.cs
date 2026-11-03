@@ -29,17 +29,17 @@ public class ConfirmEmailModel : PageModel
     /// </summary>
     [TempData]
     public string? StatusMessage { get; set; }
-    public async Task<IActionResult> OnGetAsync(string userId, string code)
+    public async Task<IActionResult> OnGetAsync(string ParticipantId, string code)
     {
-        if (userId == null || code == null)
+        if (ParticipantId == null || code == null)
         {
             return RedirectToPage("/Index");
         }
 
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(ParticipantId);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{userId}'.");
+            return NotFound($"Unable to load user with ID '{ParticipantId}'.");
         }
 
         code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));

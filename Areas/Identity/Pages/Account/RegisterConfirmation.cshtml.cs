@@ -63,13 +63,13 @@ public class RegisterConfirmationModel : PageModel
         DisplayConfirmAccountLink = true;
         if (DisplayConfirmAccountLink)
         {
-            var userId = await _userManager.GetUserIdAsync(user);
+            var ParticipantId = await _userManager.GetUserIdAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             EmailConfirmationUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
-                values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                values: new { area = "Identity", ParticipantId = ParticipantId, code = code, returnUrl = returnUrl },
                 protocol: Request.Scheme);
         }
 

@@ -34,7 +34,7 @@ namespace RaceDay.Controllers
             {
                 var thisViewModel = new UserRolesViewModel
                 {
-                    UserId = user.Id,
+                    ParticipantId = user.Id,
                     Email = user.Email ?? "",
                     UserName = user.UserName ?? "",
                     Roles = await _userManager.GetRolesAsync(user)
@@ -46,17 +46,17 @@ namespace RaceDay.Controllers
             return View(userRolesViewModel);
         }
 
-        //GET: /UserRoles/Manager?userId=xxx
-        public async Task<IActionResult> Manage (string userId)
+        //GET: /UserRoles/Manager?ParticipantId=xxx
+        public async Task<IActionResult> Manage (string ParticipantId)
         {
 
-            ViewBag.userId = userId;
+            ViewBag.ParticipantId = ParticipantId;
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(ParticipantId);
 
             if (user == null)
             {
-                ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found!!";
+                ViewBag.ErrorMessage = $"User with Id = {ParticipantId} cannot be found!!";
                 return View("Not Found");
             }
 
@@ -90,9 +90,9 @@ namespace RaceDay.Controllers
         //POST: /UserRoles/Manage
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Manage (List<ManageUserRolesViewModel> model, string userId)
+        public async Task<IActionResult> Manage (List<ManageUserRolesViewModel> model, string ParticipantId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(ParticipantId);
             if(user == null)
             {
                 return View("NotFound");

@@ -68,13 +68,13 @@ public class ResendEmailConfirmationModel : PageModel
             return Page();
         }
 
-        var userId = await _userManager.GetUserIdAsync(user);
+        var ParticipantId = await _userManager.GetUserIdAsync(user);
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         var callbackUrl = Url.Page(
             "/Account/ConfirmEmail",
             pageHandler: null,
-            values: new { userId = userId, code = code },
+            values: new { ParticipantId = ParticipantId, code = code },
             protocol: Request.Scheme)!;
         await _emailSender.SendEmailAsync(
             Input.Email,

@@ -90,9 +90,9 @@ namespace RaceDay.Data.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrolments_UserId",
+                name: "IX_Enrolments_ParticipantId",
                 table: "Enrolments",
-                column: "UserId");
+                column: "ParticipantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_EventId",
@@ -106,9 +106,9 @@ namespace RaceDay.Data.Migrations
                 unique: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Enrolments_AspNetUsers_UserId",
+                name: "FK_Enrolments_AspNetUsers_ParticipantId",
                 table: "Enrolments",
-                column: "UserId",
+                column: "ParticipantId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -126,7 +126,7 @@ namespace RaceDay.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Enrolments_AspNetUsers_UserId",
+                name: "FK_Enrolments_AspNetUsers_ParticipantId",
                 table: "Enrolments");
 
             migrationBuilder.DropForeignKey(
@@ -144,7 +144,7 @@ namespace RaceDay.Data.Migrations
                 table: "Enrolments");
 
             migrationBuilder.DropIndex(
-                name: "IX_Enrolments_UserId",
+                name: "IX_Enrolments_ParticipantId",
                 table: "Enrolments");
 
             migrationBuilder.DropColumn(

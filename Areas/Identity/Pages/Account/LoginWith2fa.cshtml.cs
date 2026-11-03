@@ -108,21 +108,21 @@ public class LoginWith2faModel : PageModel
 
         var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, rememberMe, Input.RememberMachine);
 
-        var userId = await _userManager.GetUserIdAsync(user);
+        var ParticipantId = await _userManager.GetUserIdAsync(user);
 
         if (result.Succeeded)
         {
-            _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);
+            _logger.LogInformation("User with ID '{ParticipantId}' logged in with 2fa.", user.Id);
             return LocalRedirect(returnUrl);
         }
         else if (result.IsLockedOut)
         {
-            _logger.LogWarning("User with ID '{UserId}' account locked out.", user.Id);
+            _logger.LogWarning("User with ID '{ParticipantId}' account locked out.", user.Id);
             return RedirectToPage("./Lockout");
         }
         else
         {
-            _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", user.Id);
+            _logger.LogWarning("Invalid authenticator code entered for user with ID '{ParticipantId}'.", user.Id);
             ModelState.AddModelError(string.Empty, "Invalid authenticator code.");
             return Page();
         }

@@ -15,7 +15,7 @@ namespace RaceDay.Controllers.Api
         private readonly ApplicationDbContext _db;
         public CategoriesController(ApplicationDbContext db) => _db = db;
 
-        private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        private string ParticipantId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         /// <summary>Lists the categories of an event (e.g. Under 20, Senior, 10km). Both roles.</summary>
         [HttpGet]
@@ -43,7 +43,7 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.FindAsync(eventId);
             if (ev == null) return NotFound();
-            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
+            if (ev.OrganiserId != ParticipantId) return StatusCode(StatusCodes.Status403Forbidden);
             if (await _db.Categories.AnyAsync(c => c.EventId == eventId && c.Name == dto.Name))
                 return Conflict("This event already has a category with that name.");
 
@@ -66,7 +66,7 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.FindAsync(eventId);
             if (ev == null) return NotFound();
-            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
+            if (ev.OrganiserId != ParticipantId) return StatusCode(StatusCodes.Status403Forbidden);
 
             var cat = await _db.Categories.FirstOrDefaultAsync(c => c.Id == categoryId && c.EventId == eventId);
             if (cat == null) return NotFound();

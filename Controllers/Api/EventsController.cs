@@ -16,7 +16,7 @@ namespace RaceDay.Controllers.Api
         private readonly ApplicationDbContext _db;
         public EventsController(ApplicationDbContext db) => _db = db;
 
-        private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        private string ParticipantId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         private static readonly Expression<Func<Event, EventResponse>> Map = e =>
             new EventResponse(e.Id, e.Name, e.Description, e.Date, e.Location, e.DistanceKm,
@@ -61,7 +61,7 @@ namespace RaceDay.Controllers.Api
                 Location = dto.Location,
                 DistanceKm = dto.DistanceKm,
                 EventType = dto.EventType,
-                OrganiserId = UserId
+                OrganiserId = ParticipantId
             };
             _db.Events.Add(ev);
             await _db.SaveChangesAsync();
@@ -80,7 +80,7 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.FindAsync(id);
             if (ev == null) return NotFound();
-            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
+            if (ev.OrganiserId != ParticipantId) return StatusCode(StatusCodes.Status403Forbidden);
 
             ev.Name = dto.Name; ev.Description = dto.Description; ev.Date = dto.Date;
             ev.Location = dto.Location; ev.DistanceKm = dto.DistanceKm; ev.EventType = dto.EventType;
@@ -99,7 +99,7 @@ namespace RaceDay.Controllers.Api
         {
             var ev = await _db.Events.FindAsync(id);
             if (ev == null) return NotFound();
-            if (ev.OrganiserId != UserId) return StatusCode(StatusCodes.Status403Forbidden);
+            if (ev.OrganiserId != ParticipantId) return StatusCode(StatusCodes.Status403Forbidden);
 
             _db.Events.Remove(ev);
             await _db.SaveChangesAsync();

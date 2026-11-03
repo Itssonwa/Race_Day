@@ -87,7 +87,7 @@ public class DeletePersonalDataModel : PageModel
         }
 
         var result = await _userManager.DeleteAsync(user);
-        var userId = await _userManager.GetUserIdAsync(user);
+        var ParticipantId = await _userManager.GetUserIdAsync(user);
         if (!result.Succeeded)
         {
             throw new InvalidOperationException($"Unexpected error occurred deleting user.");
@@ -95,7 +95,7 @@ public class DeletePersonalDataModel : PageModel
 
         await _signInManager.SignOutAsync();
 
-        _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
+        _logger.LogInformation("User with ID '{ParticipantId}' deleted themselves.", ParticipantId);
 
         return Redirect("~/");
     }

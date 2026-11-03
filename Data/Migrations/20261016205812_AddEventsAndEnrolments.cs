@@ -35,7 +35,7 @@ namespace RaceDay.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EventId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ParticipantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EnrolledOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -50,9 +50,9 @@ namespace RaceDay.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrolments_EventId_UserId",
+                name: "IX_Enrolments_EventId_ParticipantId",
                 table: "Enrolments",
-                columns: new[] { "EventId", "UserId" },
+                columns: new[] { "EventId", "ParticipantId" },
                 unique: true);
         }
 

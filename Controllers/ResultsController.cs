@@ -129,12 +129,12 @@ public class ResultsController : Controller
     [Authorize(Roles = "Participant")]
     public async Task<IActionResult> My()
     {
-        var userId = _users.GetUserId(User);
+        var ParticipantId = _users.GetUserId(User);
         var results = await _db.Results
             .Include(r => r.Enrolment!).ThenInclude(e => e.Event)
             .Include(r => r.Enrolment!).ThenInclude(e => e.Category)
             .AsNoTracking()
-            .Where(r => r.Enrolment!.ParticipantId == userId)
+            .Where(r => r.Enrolment!.ParticipantId == ParticipantId)
             .OrderByDescending(r => r.Enrolment!.Event!.Date)
             .ToListAsync();
         return View(results);
@@ -142,8 +142,8 @@ public class ResultsController : Controller
 
     private Task<Event?> FindOwnedEventAsync(int eventId)
     {
-        var userId = _users.GetUserId(User);
-        return _db.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == userId);
+        var ParticipantId = _users.GetUserId(User);
+        return _db.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == ParticipantId);
     }
 
     private async Task<CaptureResultsViewModel> BuildViewModelAsync(Event ev)

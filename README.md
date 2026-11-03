@@ -59,7 +59,7 @@ Edit your profile: click your name in the navbar, update your details, optionall
 /Identity/Account/Login and /Identity/Account/Register: public
 /Identity/Account/Manage: signed-in users
 /Home/OrganiserDashboard: Organiser
-/UserRoles and /UserRoles/Manage?userId={id}: Organiser
+/UserRoles and /UserRoles/Manage?ParticipantId={id}: Organiser
 Profile Images
 
 

@@ -135,15 +135,15 @@ public class CategoriesController : Controller
 
     private Task<Event?> FindOwnedEventAsync(int eventId)
     {
-        var userId = _users.GetUserId(User);
-        return _db.Events.FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == userId);
+        var ParticipantId = _users.GetUserId(User);
+        return _db.Events.FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == ParticipantId);
     }
 
     private Task<Category?> FindOwnedCategoryAsync(int id)
     {
-        var userId = _users.GetUserId(User);
+        var ParticipantId = _users.GetUserId(User);
         return _db.Categories
             .Include(c => c.Event)
-            .FirstOrDefaultAsync(c => c.Id == id && c.Event!.OrganiserId == userId);
+            .FirstOrDefaultAsync(c => c.Id == id && c.Event!.OrganiserId == ParticipantId);
     }
 }

@@ -79,13 +79,13 @@ public class EnrolmentsController : Controller
     [Authorize(Roles = "Participant")]
     public async Task<IActionResult> My()
     {
-        var userId = _users.GetUserId(User);
+        var ParticipantId = _users.GetUserId(User);
         var enrolments = await _db.Enrolments
             .Include(e => e.Event)
             .Include(e => e.Category)
             .Include(e => e.Result)
             .AsNoTracking()
-            .Where(e => e.ParticipantId == userId)
+            .Where(e => e.ParticipantId == ParticipantId)
             .OrderBy(e => e.Event!.Date)
             .ToListAsync();
         return View(enrolments);
@@ -96,10 +96,10 @@ public class EnrolmentsController : Controller
     [Authorize(Roles = "Participant")]
     public async Task<IActionResult> Withdraw(int id)
     {
-        var userId = _users.GetUserId(User);
+        var ParticipantId = _users.GetUserId(User);
         var enrolment = await _db.Enrolments
             .Include(e => e.Event).Include(e => e.Result)
-            .FirstOrDefaultAsync(e => e.Id == id && e.ParticipantId == userId);
+            .FirstOrDefaultAsync(e => e.Id == id && e.ParticipantId == ParticipantId);
         if (enrolment == null) return NotFound();
 
         if (enrolment.Result != null || enrolment.Event!.Date <= DateTime.Now)
@@ -118,9 +118,9 @@ public class EnrolmentsController : Controller
     [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> ForEvent(int eventId)
     {
-        var userId = _users.GetUserId(User);
+        var ParticipantId = _users.GetUserId(User);
         var ev = await _db.Events.AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == userId);
+            .FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == ParticipantId);
         if (ev == null) return NotFound();
 
         ViewBag.Event = ev;
@@ -139,8 +139,8 @@ public class EnrolmentsController : Controller
         if (ev.Date <= DateTime.Now) return "This event has already taken place.";
         if (!ev.Categories.Any()) return "The organiser hasn't added any categories for this event yet.";
 
-        var userId = _users.GetUserId(User);
-        if (await _db.Enrolments.AnyAsync(e => e.EventId == ev.Id && e.ParticipantId == userId))
+        var ParticipantId = _users.GetUserId(User);
+        if (await _db.Enrolments.AnyAsync(e => e.EventId == ev.Id && e.ParticipantId == ParticipantId))
             return "You are already enrolled in this event.";
 
         return null;
