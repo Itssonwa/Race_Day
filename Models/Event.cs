@@ -1,47 +1,44 @@
-﻿using RaceDay.Data;
+using System.ComponentModel.DataAnnotations;
 
-namespace RaceDay.Models
+using RaceDay.Data;
+
+namespace RaceDay.Models;
+
+public enum EventType
 {
-    public enum EventType { Run, Walk, Cycle }
+    Run,
+    Walk,
+    Cycle
+}
 
-    public class Event
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public DateTime Date { get; set; }
-        public string Location { get; set; } = string.Empty;
-        public double DistanceKm { get; set; }
-        public EventType EventType { get; set; }
-        public string? OrganiserId { get; set; }
-        public List<Category> Categories { get; set; } = new();
-    }
+public class Event
+{
+    public int Id { get; set; }
 
-    public class Category
-    {
-        public int Id { get; set; }
-        public int EventId { get; set; }
-        public string Name { get; set; } = string.Empty;   // e.g. "Under 20", "21km"
-    }
+    [Required, StringLength(150)]
+    public string Name { get; set; } = string.Empty;
 
-    public class Enrolment
-    {
-        public int Id { get; set; }
-        public int EventId { get; set; }
-        public Event? Event { get; set; }
-        public int CategoryId { get; set; }
-        public Category? Category { get; set; }
-        public string UserId { get; set; } = string.Empty;
-        public ApplicationUser? User { get; set; }
-        public DateTime EnrolledOn { get; set; } = DateTime.UtcNow;
-    }
+    [Required, StringLength(2000)]
+    public string Description { get; set; } = string.Empty;
 
-    public class Result
-    {
-        public int Id { get; set; }
-        public int EnrolmentId { get; set; }
-        public Enrolment? Enrolment { get; set; }
-        public TimeSpan FinishTime { get; set; }
-        public int Position { get; set; }
-    }
+    [DataType(DataType.DateTime)]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+    public DateTime Date { get; set; }
+
+    [Required, StringLength(200)]
+    public string Location { get; set; } = string.Empty;
+
+    [Range(0.1, 1000, ErrorMessage = "Distance must be between 0.1 and 1000 km.")]
+    [Display(Name = "Distance (km)")]
+    public decimal DistanceKm { get; set; }
+
+    [Display(Name = "Event type")]
+    public EventType EventType { get; set; }
+
+    // The organiser who owns this event
+    public string OrganiserId { get; set; } = string.Empty;
+    public ApplicationUser? Organiser { get; set; }
+
+    public ICollection<Category> Categories { get; set; } = new List<Category>();
+    public ICollection<Enrolment> Enrolments { get; set; } = new List<Enrolment>();
 }
