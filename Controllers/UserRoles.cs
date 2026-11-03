@@ -8,7 +8,7 @@ using RaceDay.Data;
 
 namespace RaceDay.Controllers
 {
-    [Authorize(Roles = "Organiser")]
+    [Authorize(Roles = "Admin,Organiser")]
     public class UserRoles : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -17,44 +17,53 @@ namespace RaceDay.Controllers
         public UserRoles(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager
+            
             )
-
         {
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
-
+        //GET: /UserRoles
         public async Task<IActionResult> Index()
         {
             var users = await _userManager.Users.ToListAsync();
             var userRolesViewModel = new List<UserRolesViewModel>();
-            foreach (var user in users)
+
+            foreach(var user in users)
             {
                 var thisViewModel = new UserRolesViewModel
                 {
-                    UserID = user.Id,
+                    UserId = user.Id,
                     Email = user.Email ?? "",
                     UserName = user.UserName ?? "",
                     Roles = await _userManager.GetRolesAsync(user)
                 };
-                userRolesViewModel.Add(thisViewModel);
 
+                userRolesViewModel.Add(thisViewModel);
             }
+
             return View(userRolesViewModel);
         }
 
-        public async Task<IActionResult> Manage(string userId)
+        //GET: /UserRoles/Manager?userId=xxx
+        public async Task<IActionResult> Manage (string userId)
         {
+
             ViewBag.userId = userId;
+
             var user = await _userManager.FindByIdAsync(userId);
+
             if (user == null)
             {
-                ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found!";
+                ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found!!";
                 return View("Not Found");
             }
+
             ViewBag.UserName = user.UserName;
+
             var model = new List<ManageUserRolesViewModel>();
+
             foreach (var role in _roleManager.Roles.ToList())
             {
                 var userRolesViewModel = new ManageUserRolesViewModel
@@ -62,7 +71,8 @@ namespace RaceDay.Controllers
                     RoleId = role.Id,
                     RoleName = role.Name ?? ""
                 };
-                if (await _userManager.IsInRoleAsync(user, role.Name))
+
+                if (await _userManager.IsInRoleAsync(user, role.Name!))
                 {
                     userRolesViewModel.isSelected = true;
 
@@ -71,34 +81,42 @@ namespace RaceDay.Controllers
                 {
                     userRolesViewModel.isSelected = false;
                 }
+
                 model.Add(userRolesViewModel);
             }
             return View(model);
         }
 
+        //POST: /UserRoles/Manage
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Manage(List<ManageUserRolesViewModel>model, string userId)
+        public async Task<IActionResult> Manage (List<ManageUserRolesViewModel> model, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            if(user == null)
             {
                 return View("NotFound");
             }
+
             var roles = await _userManager.GetRolesAsync(user);
             var result = await _userManager.RemoveFromRolesAsync(user, roles);
+
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Can't remove user role");
+                ModelState.AddModelError("", "Cannot remove user existing role!");
                 return View(model);
             }
-            result = await _userManager.AddToRolesAsync(user, model.Where(x => x.isSelected).Select(y => y.RoleName));
+
+            result = await _userManager.AddToRolesAsync(user,model.Where(x => x.isSelected).Select(y => y.RoleName));
+
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Can't add selected roles to user");
+                ModelState.AddModelError("", "Cannnot add selected roles to user!");
                 return View(model);
             }
+
             return RedirectToAction(nameof(Index));
         }
+        
     }
 }
