@@ -4,10 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using RaceDay.Data;
 
 #nullable disable
 
-namespace RaceDay.Data.Migrations
+namespace RaceDay.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -87,13 +88,13 @@ namespace RaceDay.Data.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ParticipantId")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParticipantId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
@@ -111,26 +112,26 @@ namespace RaceDay.Data.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ParticipantId")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("ParticipantId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<string>("ParticipantId")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ParticipantId", "RoleId");
+                    b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
@@ -139,7 +140,7 @@ namespace RaceDay.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<string>("ParticipantId")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
@@ -153,7 +154,7 @@ namespace RaceDay.Data.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ParticipantId", "LoginProvider", "Name");
+                    b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
@@ -253,9 +254,13 @@ namespace RaceDay.Data.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -310,28 +315,33 @@ namespace RaceDay.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
-                    b.Property<double>("DistanceKm")
-                        .HasColumnType("float");
+                    b.Property<decimal>("DistanceKm")
+                        .HasPrecision(8, 2)
+                        .HasColumnType("decimal(8,2)");
 
-                    b.Property<string>("EventType")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("OrganiserId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganiserId");
 
                     b.ToTable("Events");
                 });
@@ -343,6 +353,9 @@ namespace RaceDay.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CapturedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("EnrolmentId")
                         .HasColumnType("int");
@@ -374,7 +387,7 @@ namespace RaceDay.Data.Migrations
                 {
                     b.HasOne("RaceDay.Data.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("ParticipantId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -383,7 +396,7 @@ namespace RaceDay.Data.Migrations
                 {
                     b.HasOne("RaceDay.Data.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("ParticipantId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -398,7 +411,7 @@ namespace RaceDay.Data.Migrations
 
                     b.HasOne("RaceDay.Data.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("ParticipantId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -407,61 +420,86 @@ namespace RaceDay.Data.Migrations
                 {
                     b.HasOne("RaceDay.Data.ApplicationUser", null)
                         .WithMany()
-                        .HasForeignKey("ParticipantId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("RaceDay.Models.Category", b =>
                 {
-                    b.HasOne("RaceDay.Models.Event", null)
+                    b.HasOne("RaceDay.Models.Event", "Event")
                         .WithMany("Categories")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("RaceDay.Models.Enrolment", b =>
                 {
                     b.HasOne("RaceDay.Models.Category", "Category")
-                        .WithMany()
+                        .WithMany("Enrolments")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RaceDay.Models.Event", "Event")
-                        .WithMany()
+                        .WithMany("Enrolments")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RaceDay.Data.ApplicationUser", "User")
+                    b.HasOne("RaceDay.Data.ApplicationUser", "Participant")
                         .WithMany()
                         .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
 
                     b.Navigation("Event");
 
-                    b.Navigation("User");
+                    b.Navigation("Participant");
+                });
+
+            modelBuilder.Entity("RaceDay.Models.Event", b =>
+                {
+                    b.HasOne("RaceDay.Data.ApplicationUser", "Organiser")
+                        .WithMany()
+                        .HasForeignKey("OrganiserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Organiser");
                 });
 
             modelBuilder.Entity("RaceDay.Models.Result", b =>
                 {
                     b.HasOne("RaceDay.Models.Enrolment", "Enrolment")
-                        .WithMany()
-                        .HasForeignKey("EnrolmentId")
+                        .WithOne("Result")
+                        .HasForeignKey("RaceDay.Models.Result", "EnrolmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Enrolment");
                 });
 
+            modelBuilder.Entity("RaceDay.Models.Category", b =>
+                {
+                    b.Navigation("Enrolments");
+                });
+
+            modelBuilder.Entity("RaceDay.Models.Enrolment", b =>
+                {
+                    b.Navigation("Result");
+                });
+
             modelBuilder.Entity("RaceDay.Models.Event", b =>
                 {
                     b.Navigation("Categories");
+
+                    b.Navigation("Enrolments");
                 });
 #pragma warning restore 612, 618
         }
