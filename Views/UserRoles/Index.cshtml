@@ -28,7 +28,7 @@
                         @string.Join(", ", user.Roles)
                     </td>
                     <td>
-                        <a asp-action="Manage" asp-route-userId="@user.UserId" class="btn btn-danger btn-sm"> Manage Roles</a>
+                        <a asp-action="Manage" asp-route-userId="@user.ParticipantId" class="btn btn-danger btn-sm"> Manage Roles</a>
                     </td>
                 </tr>
             }

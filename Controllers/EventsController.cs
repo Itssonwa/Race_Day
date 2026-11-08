@@ -51,14 +51,14 @@ public class EventsController : Controller
         return View(ev);
     }
 
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public IActionResult Create()
     {
         return View(new Event { Date = DateTime.Today.AddDays(30).AddHours(8) });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Create([Bind("Name,Description,Date,Location,DistanceKm,EventType")] Event ev)
     {
         if (!ModelState.IsValid) return View(ev);
@@ -70,7 +70,7 @@ public class EventsController : Controller
         TempData["Success"] = "Event created. Now add the categories for it.";
         return RedirectToAction("Index", "Categories", new { eventId = ev.Id });
     }
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
@@ -79,7 +79,7 @@ public class EventsController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Edit(int id)
     {
         var ev = await FindOwnedEventAsync(id);
@@ -97,7 +97,7 @@ public class EventsController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();
@@ -106,7 +106,7 @@ public class EventsController : Controller
     }
 
     [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var ev = await FindOwnedEventAsync(id);

@@ -8,7 +8,7 @@ using RaceDay.Data;
 
 namespace RaceDay.Controllers
 {
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public class UserRoles : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

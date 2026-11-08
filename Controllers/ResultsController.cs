@@ -22,7 +22,7 @@ public class ResultsController : Controller
     }
 
     // Organiser: capture times and positions for all enrolments of one of their events
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Capture(int eventId)
     {
         var ev = await FindOwnedEventAsync(eventId);
@@ -38,7 +38,7 @@ public class ResultsController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Capture(CaptureResultsViewModel model)
     {
         var ev = await FindOwnedEventAsync(model.EventId);

@@ -6,10 +6,6 @@ namespace RaceDay.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult AdminDashboard()
-        {
-            return View();
-        }
 
         public IActionResult OrganiserDashboard()
         {

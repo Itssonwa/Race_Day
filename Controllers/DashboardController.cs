@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RaceDay.Controllers;
 
-[Authorize(Roles = "Admin,Organiser")]
+[Authorize(Roles = "Organiser")]
 public class DashboardController : Controller
 {
     private readonly ApplicationDbContext _db;
@@ -25,7 +25,7 @@ public class DashboardController : Controller
         var user = await _users.GetUserAsync(User);
         if (user == null) return Challenge();
 
-        if (User.IsInRole("Admin") || User.IsInRole("Organiser"))
+        if (User.IsInRole("Organiser"))
             return View("Organiser", await BuildOrganiserAsync(user));
 
         if (User.IsInRole("Participant"))

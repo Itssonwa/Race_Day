@@ -36,7 +36,7 @@ public class CategoriesController : Controller
         return View(categories);
     }
 
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Create(int eventId)
     {
         var ev = await FindOwnedEventAsync(eventId);
@@ -47,7 +47,7 @@ public class CategoriesController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Create([Bind("EventId,Name,Kind")] Category category)
     {
         var ev = await FindOwnedEventAsync(category.EventId);
@@ -67,7 +67,7 @@ public class CategoriesController : Controller
         TempData["Success"] = "Category added.";
         return RedirectToAction(nameof(Index), new { eventId = category.EventId });
     }
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
@@ -79,7 +79,7 @@ public class CategoriesController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Edit(int id)
     {
         var category = await FindOwnedCategoryAsync(id);
@@ -105,7 +105,7 @@ public class CategoriesController : Controller
         return RedirectToAction(nameof(Index), new { eventId = category.EventId });
     }
 
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();
@@ -114,7 +114,7 @@ public class CategoriesController : Controller
     }
 
     [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Organiser")]
+    [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var category = await FindOwnedCategoryAsync(id);

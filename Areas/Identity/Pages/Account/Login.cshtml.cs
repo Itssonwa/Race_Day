@@ -110,21 +110,17 @@ public class LoginModel : PageModel
             
             if (result.Succeeded)
             {
-                if (User.IsInRole("Admin"))
+                if (User.IsInRole("Organiser"))
                 {
-                    _logger.LogInformation("User Admin logged in.");
-                    return RedirectToAction("AdminDashboard","Home");
+                    _logger.LogInformation("User Organiser logged in.");
+                    return RedirectToAction("OrganiserDashboard", "Home");
                 }
                 else if (User.IsInRole("Participant"))
                 {
                     _logger.LogInformation("User Participant logged in.");
                     return RedirectToPage("./Manage/Index");
                 }
-                else if (User.IsInRole("Organiser"))
-                {
-                    _logger.LogInformation("User Organiser logged in.");
-                    return RedirectToAction("OrganiserDashboard", "Home");
-                }
+               
             }
             if (result.RequiresTwoFactor)
             {
