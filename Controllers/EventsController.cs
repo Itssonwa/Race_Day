@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RaceDay.Services;
 
 namespace RaceDay.Controllers;
 
@@ -12,11 +13,13 @@ public class EventsController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly UserManager<ApplicationUser> _users;
+    private readonly IBlobStorageService _blobs;
 
-    public EventsController(ApplicationDbContext db, UserManager<ApplicationUser> users)
+    public EventsController(ApplicationDbContext db, UserManager<ApplicationUser> users, IBlobStorageService blobs)
     {
         _db = db;
         _users = users;
+        _blobs = blobs;
     }
 
     // Both roles
@@ -57,18 +60,51 @@ public class EventsController : Controller
         return View(new Event { Date = DateTime.Today.AddDays(30).AddHours(8) });
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken, RequestSizeLimit(5_000_000)]
     [Authorize(Roles = "Organiser")]
-    public async Task<IActionResult> Create([Bind("Name,Description,Date,Location,DistanceKm,EventType")] Event ev)
+    public async Task<IActionResult> Create([Bind("Name,Description,Date,Location,DistanceKm,EventType")] Event ev, IFormFile? bannerfile)
     {
+
+        var hasBanner = bannerfile is { Length: > 0 };
+        if (hasBanner)
+        {
+            var error = _blobs.Validate(bannerfile!);
+            if (error != null) ModelState.AddModelError("bannerFile", error);
+        }
+
         if (!ModelState.IsValid) return View(ev);
 
         ev.OrganiserId = _users.GetUserId(User)!;
+
+        BlobUploadResult? uploaded = null;
+
+        try
+        {
+            if (hasBanner)
+            {
+                uploaded = await _blobs.UploadBannerAsync(bannerfile!);
+                ev.BannerBlobName = uploaded.BlobName;
+                ev.BannerImageUrl = uploaded.Url;
+            }
+
+            _db.Add(ev);
+            await _db.SaveChangesAsync();
+        }
+
+        catch
+        {
+            // Don't leave an orphaned image in the container if the database save failed
+            if (uploaded != null) await _blobs.DeleteAsync(uploaded.BlobName);
+            throw;
+        }
+
         _db.Add(ev);
         await _db.SaveChangesAsync();
 
         TempData["Success"] = "Event created. Now add the categories for it.";
         return RedirectToAction("Index", "Categories", new { eventId = ev.Id });
+
+
     }
     [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> Edit(int? id)
