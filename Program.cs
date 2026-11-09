@@ -37,6 +37,7 @@ builder.Services.AddAuthentication()
     });
 
 builder.Services.AddScoped<IProfileImageService, ProfileImageService>();
+builder.Services.AddSingleton<RaceDay.Services.IBlobStorageService, RaceDay.Services.BlobStorageService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
