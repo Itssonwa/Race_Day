@@ -221,3 +221,185 @@ Role rules use [Authorize(Roles = ...)], and event ownership is checked in the c
 Anyone can register as an Organiser through the API. Restrict this before real use.
 Roles are stored in the token or cookie, so log in again after a role change.
 Profile image uploads are checked by extension and size only.
+
+
+
+
+--PART 3--
+Overview
+RaceDay is an ASP.NET Core MVC web application designed to manage racing events. The system allows organisers to create and manage events while participants can browse events, view categories, and register for races.
+
+The application implements secure authentication and authorisation using ASP.NET Core Identity and JWT authentication, supports image uploads through Azure Blob Storage, and has been containerised using Docker for simplified deployment.
+
+
+
+
+Features:
+
+Authentication and Authorisation
+ASP.NET Core Identity integration
+JWT-based authentication
+Secure login and registration
+Role-based access control
+Supported roles:
+Organiser
+Participant
+Event Management
+
+
+
+
+Organisers can:
+
+Create events
+Edit events
+Delete events
+Manage event details
+Upload event banner images
+
+
+
+
+Participants can:
+
+View available events
+View event information
+Browse event categories
+Event Categories
+Categories linked to specific events
+View categories for each race
+Organised race registration structure
+Azure Blob Storage Integration
+
+Implemented Azure Blob Storage for media management.
+
+
+
+
+
+Features:
+
+Upload event banner images
+Store images securely in Azure
+Generate image URLs for display
+Automatic image retrieval in event views
+
+
+
+
+
+Swagger API Documentation:
+
+Swagger has been configured to provide:
+Interactive API testing
+Endpoint documentation
+JWT authentication testing
+XML comments support
+
+This enables developers to view and test available API endpoints directly through the browser.
+
+Automated Testing
+Implemented integration testing using xUnit.
+
+
+
+
+
+Test Coverage Includes:
+
+Authentication Tests
+User registration
+User login
+Invalid role handling
+Role assignment validation
+Event Tests
+Event creation
+Event updates
+Authorisation checks
+Organiser ownership validation
+
+
+Continuous Integration
+
+
+
+
+
+
+GitHub Actions has been configured to automate:
+
+Build validation
+Test execution
+Continuous integration workflow
+
+This ensures application changes are validated automatically before deployment.
+
+Technologies Used
+Backend
+ASP.NET Core MVC
+ASP.NET Core Identity
+Entity Framework Core
+SQL Server
+Security
+JWT Authentication
+Role-based Authorisation
+Cloud Services
+Azure Blob Storage
+Documentation
+Swagger / OpenAPI
+Testing
+xUnit
+Integration Testing
+DevOps
+Docker
+GitHub Actions
+Database
+
+The application uses SQL Server as the primary database.
+
+
+
+
+
+
+Entity Framework Core is used for:
+
+Database migrations
+Data access
+Relationship management
+Future Improvements
+
+
+
+
+
+Potential future enhancements include:
+
+Online race registration
+Payment integration
+Email notifications
+Race result tracking
+Participant dashboards
+HTTPS Docker configuration
+Author
+
+
+
+
+
+Developed as part of the RaceDay project to demonstrate:
+
+ASP.NET Core MVC development
+Authentication and authorisation
+Cloud storage integration
+API documentation
+Automated testing
+Containerisation using Docker
+CI/CD practices
+
+
+
+Run Docker Container:
+
+docker run -d -p 8080:8080 --name RaceDay my-mvc-app
+
