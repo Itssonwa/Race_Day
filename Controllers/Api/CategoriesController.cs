@@ -10,10 +10,10 @@ namespace RaceDay.Controllers.Api
     [ApiController]
     [Route("api/events/{eventId}/categories")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    public class CategoriesController : ControllerBase
+    public class CategoriesApiController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
-        public CategoriesController(ApplicationDbContext db) => _db = db;
+        public CategoriesApiController(ApplicationDbContext db) => _db = db;
 
         private string ParticipantId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 

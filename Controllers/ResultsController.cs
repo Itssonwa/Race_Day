@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 namespace RaceDay.Controllers;
 
 [Authorize]
-public class ResultsController : Controller
+public class ResultsApiController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly UserManager<ApplicationUser> _users;
 
-    public ResultsController(ApplicationDbContext db, UserManager<ApplicationUser> users)
+    public ResultsApiController(ApplicationDbContext db, UserManager<ApplicationUser> users)
     {
         _db = db;
         _users = users;
