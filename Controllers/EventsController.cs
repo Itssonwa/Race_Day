@@ -125,7 +125,7 @@ public class EventsController : Controller
         if (hasBanner)
         {
             var error = _blobs.Validate(bannerfile!);
-            if (error != null) ModelState.AddModelError("bannerfile", error);
+            if (error != null) ModelState.AddModelError("bannerFile", error);
         }
 
         // Whitelist bindable properties (prevents over-posting, keeps OrganiserId safe)
